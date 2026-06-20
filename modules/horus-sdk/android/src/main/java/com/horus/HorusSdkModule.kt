@@ -1,0 +1,56 @@
+package com.horus
+
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+
+/** Bbox + frame geometry, bundled to stay under the Expo Function 8-arg limit. */
+class BboxFrame : Record {
+  @Field val format: Int = 0
+  @Field val width: Int = 0
+  @Field val height: Int = 0
+  @Field val x: Int = 0
+  @Field val y: Int = 0
+  @Field val bboxW: Int = 0
+  @Field val bboxH: Int = 0
+}
+
+/**
+ * Expo-facing wrapper over the [Horus] JNI bridge. Keeps marshaling
+ * (Double<->Float, JS array<->ByteArray, Record<->positional args) out of the
+ * native bridge class so [Horus]'s signatures stay an exact mirror of the
+ * Rust `Java_com_horus_Horus_*` exports.
+ */
+class HorusSdkModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("HorusSdk")
+
+    Function("pipelineCreate") { fps: Double, width: Int, height: Int, bufferSize: Int ->
+      Horus.pipelineCreate(fps.toFloat(), width, height, bufferSize)
+    }
+
+    Function("pipelineProcessBbox") { handle: Long, frame: ByteArray, frameInfo: BboxFrame, timestampUs: Long ->
+      Horus.pipelineProcessBbox(
+        handle,
+        frame,
+        frameInfo.format,
+        frameInfo.width,
+        frameInfo.height,
+        frameInfo.x,
+        frameInfo.y,
+        frameInfo.bboxW,
+        frameInfo.bboxH,
+        timestampUs,
+      )?.toList()
+    }
+
+    Function("pipelineReset") { handle: Long ->
+      Horus.pipelineReset(handle)
+    }
+
+    Function("pipelineDestroy") { handle: Long ->
+      Horus.pipelineDestroy(handle)
+    }
+  }
+}
