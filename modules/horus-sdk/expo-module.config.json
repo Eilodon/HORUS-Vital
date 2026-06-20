@@ -1,6 +1,6 @@
 {
   "platforms": ["android"],
   "android": {
-    "modules": ["com.horus.HorusSdkModule"]
+    "modules": ["com.horus.HorusSdkModule", "com.horus.HorusCameraViewModule"]
   }
 }

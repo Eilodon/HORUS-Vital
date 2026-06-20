@@ -1,5 +1,6 @@
 package com.horus
 
+import android.os.Bundle
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -21,10 +22,27 @@ class BboxFrame : Record {
  * (Double<->Float, JS array<->ByteArray, Record<->positional args) out of the
  * native bridge class so [Horus]'s signatures stay an exact mirror of the
  * Rust `Java_com_horus_Horus_*` exports.
+ *
+ * Also declares the "onMetrics" event so [HorusCameraView] can emit live
+ * biometric data through the standard Expo event bus.
  */
 class HorusSdkModule : Module() {
+
+  companion object {
+    @Volatile private var instance: HorusSdkModule? = null
+
+    fun emitMetrics(data: Bundle) {
+      instance?.sendEvent("onMetrics", data)
+    }
+  }
+
   override fun definition() = ModuleDefinition {
     Name("HorusSdk")
+
+    Events("onMetrics")
+
+    OnCreate { instance = this@HorusSdkModule }
+    OnDestroy { if (instance === this@HorusSdkModule) instance = null }
 
     Function("pipelineCreate") { fps: Double, width: Int, height: Int, bufferSize: Int ->
       Horus.pipelineCreate(fps.toFloat(), width, height, bufferSize)
