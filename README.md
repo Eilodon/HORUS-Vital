@@ -1,5 +1,7 @@
 # HORUS-Vital
 
+[![CI](https://github.com/Eilodon/HORUS-Vital/actions/workflows/ci.yml/badge.svg)](https://github.com/Eilodon/HORUS-Vital/actions/workflows/ci.yml)
+
 **Sovereign on-device biofeedback coach — QVAC Hackathon I submission**
 Track 3 (Mobile/Android) + Track 4 (Psy Models)
 

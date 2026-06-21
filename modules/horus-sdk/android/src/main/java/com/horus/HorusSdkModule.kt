@@ -46,10 +46,10 @@ class HorusSdkModule : Module() {
 
     Function("pipelineCreate") { fps: Double, width: Int, height: Int, bufferSize: Int ->
       val actual = Horus.ffiContractVersion()
-      check(actual == Horus.EXPECTED_FFI_CONTRACT_VERSION) {
+      check(actual == HorusFfiContract.EXPECTED_FFI_CONTRACT_VERSION) {
         "libhorus.so FFI contract version mismatch: expected " +
-          "${Horus.EXPECTED_FFI_CONTRACT_VERSION}, got $actual. The bundled .so is out of " +
-          "sync with this JS/Kotlin layer — re-run scripts/sync-horus-sdk.sh against a " +
+          "${HorusFfiContract.EXPECTED_FFI_CONTRACT_VERSION}, got $actual. The bundled .so is " +
+          "out of sync with this JS/Kotlin layer — re-run scripts/sync-horus-sdk.sh against a " +
           "matching HORUS core release before trusting the metric pack."
       }
       Horus.pipelineCreate(fps.toFloat(), width, height, bufferSize)

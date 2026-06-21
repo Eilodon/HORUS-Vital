@@ -14,15 +14,6 @@ package com.horus
  * later milestone needs them.
  */
 object Horus {
-    /**
-     * Expected `FFI_CONTRACT_VERSION` (see HORUS core's `src/ffi_contract.rs` /
-     * `bindings/ffi-contract.json`). Bump together with the `.so` whenever the
-     * metric-pack layout, `PixelFormat` codes, or JNI symbol surface changes —
-     * [HorusSdkModule] checks this against [ffiContractVersion] at startup and
-     * fails loudly on mismatch instead of silently misinterpreting the pack.
-     */
-    const val EXPECTED_FFI_CONTRACT_VERSION = 1
-
     init {
         System.loadLibrary("horus")
     }
@@ -33,7 +24,8 @@ object Horus {
 
     /**
      * FFI contract version baked into the loaded `libhorus.so`. Compare
-     * against [EXPECTED_FFI_CONTRACT_VERSION] before trusting the metric pack.
+     * against [HorusFfiContract.EXPECTED_FFI_CONTRACT_VERSION] before
+     * trusting the metric pack.
      */
     @JvmStatic
     external fun ffiContractVersion(): Int

@@ -100,9 +100,15 @@ EOF
 
   echo "==> Wrote ${LOCK_FILE}:"
   cat "${LOCK_FILE}"
+
   echo ""
-  echo "Review this diff, bump Horus.kt's EXPECTED_FFI_CONTRACT_VERSION if it changed, then run:"
-  echo "  scripts/check-jni-symbols.sh"
+  echo "==> Regenerating TS/Kotlin contract types from the synced ffi-contract.json"
+  ( cd "${REPO_ROOT}" && node scripts/generate-ffi-contract.mjs )
+
+  echo ""
+  echo "Review the diff (horus-sdk.lock, modules/horus-sdk/ffi-contract.json, and the"
+  echo "regenerated HorusSdk.contract.generated.ts / HorusFfiContract.kt), then run:"
+  echo "  npm run verify:ffi"
 }
 
 case "${MODE}" in

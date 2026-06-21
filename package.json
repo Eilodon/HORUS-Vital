@@ -21,7 +21,9 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "sync:horus-sdk": "scripts/sync-horus-sdk.sh",
-    "verify:ffi": "scripts/check-jni-symbols.sh"
+    "verify:ffi": "scripts/check-jni-symbols.sh",
+    "generate:ffi-contract": "node scripts/generate-ffi-contract.mjs",
+    "check:generated": "scripts/check-generated.sh"
   },
   "private": true
 }
