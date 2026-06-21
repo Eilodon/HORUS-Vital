@@ -204,6 +204,10 @@ export default function App() {
 // ── helpers ────────────────────────────────────────────────────────────────
 
 function lvl(level: number) {
+  // NaN means the fusion estimator hasn't warmed up yet (see android.rs
+  // pipeline_result_to_jarray docs) — distinct from a valid level, so check
+  // explicitly rather than relying on Math.round(NaN) → NaN → array miss.
+  if (Number.isNaN(level)) return '—';
   return ['OK', 'Mild', 'Mod', 'High', 'Crit'][Math.round(level)] ?? '—';
 }
 

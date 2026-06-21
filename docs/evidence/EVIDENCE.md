@@ -133,6 +133,31 @@ current biometric state.
 
 ---
 
+## M6 — FFI contract hardening (post-submission)
+
+Closes a silent-drift gap found during cross-repo review: the `float[13]`
+pack layout and `PixelFormat` codes were hand-mirrored across HORUS core
+(Rust), `Horus.kt` (Kotlin), and `HorusSdk.types.ts` with no enforcement.
+
+- [x] HORUS core: `FFI_CONTRACT_VERSION` + `bindings/ffi-contract.json` as the
+  single source of truth; `cargo test` fails if the JSON drifts from the
+  Rust constants (3 new tests, `Java_com_horus_Horus_ffiContractVersion` JNI export)
+- [x] HORUS-Vital: `Horus.ffiContractVersion()` checked against
+  `Horus.EXPECTED_FFI_CONTRACT_VERSION` on every `pipelineCreate()` — throws
+  immediately on mismatch instead of silently misreading the pack
+- [x] `horus-sdk.lock` pins the synced `.so` to a HORUS core commit + sha256
+  (`scripts/sync-horus-sdk.sh`), replacing the untracked manual copy
+- [x] `npm run verify:ffi` (`scripts/check-jni-symbols.sh`) diffs `nm -D
+  libhorus.so` against `ffi-contract.json`'s `jniSymbols` — re-ran after
+  rebuilding `libhorus.so`, 5/5 expected symbols present
+- [x] `App.tsx`'s `lvl()` now handles `NaN` fatigue/stress levels explicitly
+  (previously relied on `Math.round(NaN)` → array-miss → fallback, which
+  worked by accident, not by design)
+- [x] Re-verified after the change: `tsc --noEmit` 0 errors, `assembleDebug`
+  BUILD SUCCESSFUL
+
+---
+
 ## Git log (HORUS-Vital)
 
 ```

@@ -97,10 +97,11 @@ HORUS-Vital/
 │       │   ├── build.gradle       # CameraX + MediaPipe deps
 │       │   ├── jniLibs/arm64-v8a/libhorus.so
 │       │   └── src/main/java/com/horus/
-│       │       ├── Horus.kt                  # JNI bridge
+│       │       ├── Horus.kt                  # JNI bridge (+ ffiContractVersion check)
 │       │       ├── HorusSdkModule.kt         # Expo module + event bus
 │       │       ├── HorusCameraView.kt        # CameraX + MediaPipe + Horus view
 │       │       └── HorusCameraViewModule.kt  # View module registration
+│       ├── ffi-contract.json      # synced from HORUS core — see "FFI contract" below
 │       └── src/
 │           ├── HorusSdk.types.ts
 │           ├── HorusSdkModule.ts
@@ -113,8 +114,38 @@ HORUS-Vital/
 │   └── voice/
 │       ├── voice.ts               # ensureWhisper + transcribeAudio + speakResponse
 │       └── useVoice.ts
+├── scripts/
+│   ├── sync-horus-sdk.sh          # pin libhorus.so + ffi-contract.json to a HORUS source
+│   └── check-jni-symbols.sh       # nm -D diff against ffi-contract.json's jniSymbols
+├── horus-sdk.lock                 # records the synced HORUS commit/tag + .so sha256
 └── DISCLAIMER.md
 ```
+
+---
+
+## FFI contract — keeping `libhorus.so` in sync with HORUS core
+
+The `float[13]` metric pack, `PixelFormat` codes, and JNI symbol surface are a
+versioned contract owned by HORUS core (`src/ffi_contract.rs` /
+`bindings/ffi-contract.json`), not something to hand-copy. This repo:
+
+- Pins the synced `.so` + contract via [`horus-sdk.lock`](horus-sdk.lock)
+  (source commit/tag + sha256) instead of an untracked manual copy.
+- Checks `Horus.ffiContractVersion()` against `Horus.EXPECTED_FFI_CONTRACT_VERSION`
+  once per `pipelineCreate()` call ([HorusSdkModule.kt](modules/horus-sdk/android/src/main/java/com/horus/HorusSdkModule.kt)) —
+  a mismatch throws immediately instead of silently misreading the pack.
+- Verifies the bundled `.so` exports the expected JNI symbols via
+  `npm run verify:ffi` ([scripts/check-jni-symbols.sh](scripts/check-jni-symbols.sh)) —
+  catches a renamed/removed Rust export or a stray Kotlin `external fun`
+  before it becomes a device-only `UnsatisfiedLinkError`.
+
+To re-sync after a HORUS core change:
+```bash
+npm run sync:horus-sdk -- --local ../HORUS   # dev: build + copy from a local checkout
+npm run verify:ffi                            # confirm symbols still match
+```
+Review the `horus-sdk.lock` diff and bump `EXPECTED_FFI_CONTRACT_VERSION` in
+`Horus.kt` whenever the synced contract version changes.
 
 ---
 

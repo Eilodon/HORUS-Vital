@@ -1,0 +1,8 @@
+{
+  "horusCoreRepo": "https://github.com/Eilodon/HORUS",
+  "source": "local:1e9b6017db6b43e20f3651d2a69490ce08a4aaba",
+  "ffiContractVersion": 1,
+  "abi": "arm64-v8a",
+  "libhorusSha256": "0ad56e83464824522705ca1dc4bf1589cf7ceeac20024b6ac920d2d554f531de",
+  "syncedAt": "2026-06-21T08:37:16Z"
+}

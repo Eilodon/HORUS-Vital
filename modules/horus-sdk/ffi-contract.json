@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "comment": "Single source of truth for the JNI/WASM metric-pack layout, PixelFormat codes, and in-scope JNI symbol surface. Mirrors src/ffi_contract.rs (Rust) — that crate's tests fail the build if this file drifts. Consumers (e.g. HORUS-Vital) pin to a specific HORUS release tag and verify this file + libhorus.so via scripts/sync-horus-sdk.sh + scripts/check-jni-symbols.sh.",
+  "pixelFormats": {
+    "RGB888": 0,
+    "RGBA8888": 1,
+    "NV21": 2
+  },
+  "metricPack": [
+    { "name": "heartRateBpm", "unit": "bpm", "naWhen": "no heart-rate estimate yet" },
+    { "name": "confidence", "unit": "0-1" },
+    { "name": "faceDetected", "unit": "0|1" },
+    { "name": "bufferFill", "unit": "0-1" },
+    { "name": "sdnnMs", "unit": "ms", "naWhen": "HRV not estimable yet" },
+    { "name": "rmssdMs", "unit": "ms", "naWhen": "HRV not estimable yet" },
+    { "name": "respBpm", "unit": "bpm", "naWhen": "respiration not estimable yet" },
+    { "name": "fatigueScore", "unit": "0-1", "naWhen": "fatigue/stress fusion not warmed up" },
+    { "name": "stressScore", "unit": "0-1", "naWhen": "fatigue/stress fusion not warmed up" },
+    { "name": "fatigueLevel", "unit": "0-4", "naWhen": "fatigue/stress fusion not warmed up (NaN, not -1)" },
+    { "name": "stressLevel", "unit": "0-4", "naWhen": "fatigue/stress fusion not warmed up (NaN, not -1)" },
+    { "name": "recoveryReadiness", "unit": "0-1", "naWhen": "fatigue/stress fusion not warmed up" },
+    { "name": "cognitiveLoad", "unit": "0-1", "naWhen": "fatigue/stress fusion not warmed up" }
+  ],
+  "jniSymbols": [
+    "Java_com_horus_Horus_pipelineCreate",
+    "Java_com_horus_Horus_pipelineProcessBbox",
+    "Java_com_horus_Horus_pipelineReset",
+    "Java_com_horus_Horus_pipelineDestroy",
+    "Java_com_horus_Horus_ffiContractVersion"
+  ]
+}
